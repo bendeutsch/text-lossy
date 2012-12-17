@@ -36,7 +36,9 @@ sub normalize {
 }
 
 sub alphabetize {
-    # TODO!
+    my ($text) = @_;
+    $text =~ s{ \b (\p{Alpha}) (\p{Alpha}+) (\p{Alpha})}{ $1 . join('', sort split(//,$2)) . $3 }xmsegu;
+    return $text;
 }
 
 1;
