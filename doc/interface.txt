@@ -1,0 +1,17 @@
+Possible interfaces:
+
+- Fully qualified function name (Text::Lossy::filtername)
+- Prefixed name for export (lossy_filtername)
+- OO interface (Text::Lossy->new->filtername(1)->filter);
+
+- in-place, single value, multiple values
+
+Go with the OO interface only, as above. new() mandatory.
+
+Programmatic access with add_filter.
+(And possibly push_filter, pop_filter, shift_filter, unshift_filter)
+
+More programmatic access with register_filter.
+Registered filters become callable function names.
+Most likely via AUTOLOAD instead of globbing; makes for nicer
+error reports.
