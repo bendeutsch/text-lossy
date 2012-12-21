@@ -9,10 +9,12 @@ use Test::More;
 
 use Text::Lossy;
 
-is(Text::Lossy::alphabetize('Hello, World!'), 'Hello, Wlord!', "Internally sorted");
-is(Text::Lossy::alphabetize('alphabetization'), 'aaabehiilopttzn', "Long word internally sorted");
-is(Text::Lossy::alphabetize("!!::..::!! \t\t\r\n 162534"), "!!::..::!! \t\t\r\n 162534", "Whitespace, punctuation and numbers unaffected");
-is(Text::Lossy::alphabetize("drüben señor"), "dberün seoñr", "Unicode sorting");
-is(Text::Lossy::alphabetize("こんにちは"), "こちにんは", "More unicode sorting");
+my $lossy = Text::Lossy->new->alphabetize;
+
+is($lossy->filter('Hello, World!'), 'Hello, Wlord!', "Internally sorted");
+is($lossy->filter('alphabetization'), 'aaabehiilopttzn', "Long word internally sorted");
+is($lossy->filter("!!::..::!! \t\t\r\n 162534"), "!!::..::!! \t\t\r\n 162534", "Whitespace, punctuation and numbers unaffected");
+is($lossy->filter("drüben señor"), "dberün seoñr", "Unicode sorting");
+is($lossy->filter("こんにちは"), "こちにんは", "More unicode sorting");
 
 done_testing();

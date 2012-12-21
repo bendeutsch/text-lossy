@@ -12,10 +12,12 @@ BEGIN {
 diag( "Testing Text::Lossy $Text::Lossy::VERSION, Perl $], $^X" );
 
 for my $sub (qw(
-    lower
-    whitespace
-    punctuation
-    alphabetize
+    new
+    filter
+    add_filter
+    as_coderef
+
+    register_filter
 )) {
     can_ok('Text::Lossy', $sub);
 }

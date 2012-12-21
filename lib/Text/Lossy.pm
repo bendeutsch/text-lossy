@@ -22,19 +22,86 @@ our $VERSION = '0.01';
 
     use Text::Lossy;
 
-    my $foo = Text::Lossy->new();
-    ...
+    my $lossy = Text::Lossy->new;
+    $lossy->whitespace;
+    my $short = $lossy->filter($long);
 
-=head1 EXPORT
+    my $lossy = Text::Lossy->new->lower->punctuation;  # Chaining usage
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+    $lossy->filter($long); # In place
+    $lossy->filter();      # Filters $_ in place
 
-=head1 SUBROUTINES/METHODS
+=head1 CONSTRUCTORS
 
-=head2 function1
+=head2 new
+
+The constructor for a new lossy text compressor. The constructor is quite 
+light-weight; the only purpose of a compressor object is to accept and remember
+a sequence of filters to apply to text.
 
 =cut
+
+sub new {
+    my ($class) = @_;
+    return bless {
+        filters => [],
+    }, $class;
+}
+
+=head1 METHODS
+
+=head2 filter
+
+=cut
+
+sub filter {
+    my ($self, $text) = @_;
+    foreach my $f ($self->{'filters'}) {
+        $text = $f->($text);
+    }
+    return $text;
+}
+
+=head2 add_filters
+
+=cut
+
+sub add_filters {
+    my ($text, @filters) = @_;
+}
+
+=head2 as_coderef
+
+=cut
+
+sub as_coderef {
+    my ($self) = @_;
+    return sub {
+        my ($text) = @_;
+        $self->filter($text);
+    }
+}
+
+=head1 FUNCTIONS
+
+=head2 register_filter
+
+=cut
+
+our %filtermap = (
+    'lower' => \&lower,
+    'whitespace' => \&whitespace,
+    'punctuation' => \&punctuation,
+    'alphabetize' => \&alphabetize,
+);
+
+sub register_filter {
+    my ($class, %mapping) = @_;
+    # CONTINUE HERE
+    $filtermap{$name} = $coderef;
+    return;
+}
+
 
 # TODO:
 # in-place vs. copy (context)
@@ -72,6 +139,10 @@ sub unidecode {
 sub normalize {
     # TODO!
 }
+
+=head1 EXPORT
+
+Nothing exported or exportable; use the OO interface instead.
 
 =head1 AUTHOR
 
