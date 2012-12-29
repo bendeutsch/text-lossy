@@ -31,6 +31,14 @@ our $VERSION = '0.01';
     $lossy->filter($long); # In place
     $lossy->filter();      # Filters $_ in place
 
+=head1 DESCRIPTION
+
+=cut
+
+use base 'Text::Filter';
+
+our %filtermap;
+
 =head1 CONSTRUCTORS
 
 =head2 new
@@ -42,10 +50,16 @@ a sequence of filters to apply to text.
 =cut
 
 sub new {
-    my ($class) = @_;
-    return bless {
+    my $class = shift;
+    my $self = $class->SUPER::new(@_);
+    # Rebless into our own class, so we can add ourself (!) as filter
+    $self = bless $self, $class;
+    # our stash
+    $self->{'lossy'} = {
         filters => [],
-    }, $class;
+    };
+    $self->set_filter($self->as_coderef());
+    return $self;
 }
 
 =head1 METHODS
@@ -56,7 +70,7 @@ sub new {
 
 sub filter {
     my ($self, $text) = @_;
-    foreach my $f ($self->{'filters'}) {
+    foreach my $f (@{$self->{'lossy'}->{'filters'}}) {
         $text = $f->($text);
     }
     return $text;
@@ -67,7 +81,12 @@ sub filter {
 =cut
 
 sub add_filters {
-    my ($text, @filters) = @_;
+    my ($self, @filters) = @_;
+    foreach my $name (@filters) {
+        my $code = $filtermap{$name};
+        next unless $code; # a warning might be nice at this point...
+        push @{$self->{'lossy'}->{'filters'}}, $code;
+    }
 }
 
 =head2 as_coderef
@@ -77,42 +96,50 @@ sub add_filters {
 sub as_coderef {
     my ($self) = @_;
     return sub {
-        my ($text) = @_;
-        $self->filter($text);
+        return $self->filter(@_);
     }
 }
 
 =head1 FUNCTIONS
 
-=head2 register_filter
+=head2 register_filters
 
 =cut
 
-our %filtermap = (
-    'lower' => \&lower,
-    'whitespace' => \&whitespace,
-    'punctuation' => \&punctuation,
-    'alphabetize' => \&alphabetize,
+%filtermap = (
+    'lower' => \&_lower,
+    'whitespace' => \&_whitespace,
+    'punctuation' => \&_punctuation,
+    'alphabetize' => \&_alphabetize,
 );
 
-sub register_filter {
+sub register_filters {
     my ($class, %mapping) = @_;
-    # CONTINUE HERE
-    $filtermap{$name} = $coderef;
+    foreach my $name (keys %mapping) {
+        $filtermap{$name} = $mapping{$name};
+    }
     return;
 }
 
 
-# TODO:
-# in-place vs. copy (context)
-# linewise versions (parameters: is_start, is_end)
-
 sub lower {
+    my ($self) = @_;
+    $self->add_filters('lower');
+    return $self;
+}
+
+sub _lower {
     my ($text) = @_;
     return lc($text);
 }
 
 sub whitespace {
+    my ($self) = @_;
+    $self->add_filters('whitespace');
+    return $self;
+}
+
+sub _whitespace {
     my ($text) = @_;
     $text =~ s{ \s+ }{ }xmsgu;
     $text =~ s{ \A \s+ }{}xmsgu;
@@ -121,12 +148,23 @@ sub whitespace {
 }
 
 sub punctuation {
+    my ($self) = @_;
+    $self->add_filters('punctuation');
+    return $self;
+}
+
+sub _punctuation {
     my ($text) = @_;
     $text =~ s{ \p{Punctuation} }{}xmsgu;
     return $text;
 }
 
 sub alphabetize {
+    my ($self) = @_;
+    $self->add_filters('alphabetize');
+    return $self;
+}
+sub _alphabetize {
     my ($text) = @_;
     $text =~ s{ \b (\p{Alpha}) (\p{Alpha}+) (\p{Alpha})}{ $1 . join('', sort split(//,$2)) . $3 }xmsegu;
     return $text;

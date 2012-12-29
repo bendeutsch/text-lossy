@@ -14,10 +14,10 @@ diag( "Testing Text::Lossy $Text::Lossy::VERSION, Perl $], $^X" );
 for my $sub (qw(
     new
     filter
-    add_filter
+    add_filters
     as_coderef
 
-    register_filter
+    register_filters
 )) {
     can_ok('Text::Lossy', $sub);
 }
