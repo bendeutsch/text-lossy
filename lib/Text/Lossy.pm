@@ -35,8 +35,6 @@ our $VERSION = '0.01';
 
 =cut
 
-use base 'Text::Filter';
-
 our %filtermap;
 
 =head1 CONSTRUCTORS
@@ -51,15 +49,10 @@ a sequence of filters to apply to text.
 
 sub new {
     my $class = shift;
-    my $self = $class->SUPER::new(@_);
-    # Rebless into our own class, so we can add ourself (!) as filter
-    $self = bless $self, $class;
-    # our stash
-    $self->{'lossy'} = {
+    my $self = {
         filters => [],
     };
-    $self->set_filter($self->as_coderef());
-    return $self;
+    return bless $self, $class;
 }
 
 =head1 METHODS
@@ -70,7 +63,7 @@ sub new {
 
 sub filter {
     my ($self, $text) = @_;
-    foreach my $f (@{$self->{'lossy'}->{'filters'}}) {
+    foreach my $f (@{$self->{'filters'}}) {
         $text = $f->($text);
     }
     return $text;
@@ -85,7 +78,7 @@ sub add_filters {
     foreach my $name (@filters) {
         my $code = $filtermap{$name};
         next unless $code; # a warning might be nice at this point...
-        push @{$self->{'lossy'}->{'filters'}}, $code;
+        push @{$self->{'filters'}}, $code;
     }
 }
 
