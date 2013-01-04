@@ -114,6 +114,21 @@ sub register_filters {
     return;
 }
 
+=head1 FILTERS
+
+The following filters are defined by this module. Other modules may define
+more filters.
+
+Each of these filters can be added to the set via the L</add_filter> method,
+or by using its name as an object method on the filtering object,
+i.e. C<< $lossy->lower >>.
+
+=head2 lower
+
+Corresponds exactly to the L<lc|perlfun/lc> builtin in Perl, up
+to and including its Unicode handling.
+
+=cut
 
 sub lower {
     my ($self) = @_;
@@ -125,6 +140,14 @@ sub _lower {
     my ($text) = @_;
     return lc($text);
 }
+
+=head2 whitespace
+
+Collapses any whitespace (C<\s> in regular expressions) to a single space, C<U+0020>.
+Whitespace at the beginning and end of the text is stripped; you may need to add some
+to account for line continuations or a new line marker at the end.
+
+=cut
 
 sub whitespace {
     my ($self) = @_;
@@ -140,6 +163,13 @@ sub _whitespace {
     return $text;
 }
 
+=head2 punctuation
+
+Strips punctuation, that is anything matching C<\p{Punctuation}>. It is replaced by
+nothing, removing it completely.
+
+=cut
+
 sub punctuation {
     my ($self) = @_;
     $self->add_filters('punctuation');
@@ -152,6 +182,18 @@ sub _punctuation {
     return $text;
 }
 
+=head2 alphabetize
+
+Leaves the first and last letters of a word alone, but replaces the interior letters with
+the same set, sorted by the L<perlfun:sort|sort> function. This is done on the observation
+(source uncertain at the time) that words can still be made out if the letters are present, but
+in a different order, as long as the outer ones remain the same.
+
+This filter may not work as proposed with every language or writing system. Specifically, it
+uses end-of-word matches C<\b> to determine which letters to leave alone.
+
+=cut
+
 sub alphabetize {
     my ($self) = @_;
     $self->add_filters('alphabetize');
@@ -159,17 +201,13 @@ sub alphabetize {
 }
 sub _alphabetize {
     my ($text) = @_;
-    $text =~ s{ \b (\p{Alpha}) (\p{Alpha}+) (\p{Alpha})}{ $1 . join('', sort split(//,$2)) . $3 }xmsegu;
+    $text =~ s{ \b (\p{Alpha}) (\p{Alpha}+) (\p{Alpha}) \b }{ $1 . join('', sort split(//,$2)) . $3 }xmsegu;
     return $text;
 }
 
-sub unidecode {
-    # TODO!
-}
-
-sub normalize {
-    # TODO!
-}
+# TODO:
+# - unidecode (separate module)
+# - normalize (separate module)
 
 =head1 EXPORT
 
@@ -181,12 +219,11 @@ Ben Deutsch, C<< <ben at bendeutsch.de> >>
 
 =head1 BUGS
 
+None known so far.
+
 Please report any bugs or feature requests to C<bug-text-lossy at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Text-Lossy>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
-
 
 =head1 SUPPORT
 
