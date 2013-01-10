@@ -33,6 +33,30 @@ our $VERSION = '0.01';
 
 =head1 DESCRIPTION
 
+C<Text::Lossy> is a collection of text filters for lossy compression.
+"Lossy compression" changes the data in a way which is irreversible,
+but results in a smaller file size after compression. One of the best
+known lossy compression uses is the JPEG image format.
+
+Note that this module does not perform the actual compression itself,
+it merely changes the text so that it may be compressed better.
+
+=head2 Alpha software
+
+This code is currently B<alpha software>. Anything can and will change,
+most likely in a backwards-incompatible manner. You have been warned.
+
+=head2 Usage
+
+C<Text::Lossy> uses an object oriented interface. You create a new
+C<Text::Lossy> object, set the filters you wish to use (described below),
+and call the L</filter|filter> method on the object. You can call this
+method as often as you like. In addition, there is a method which produces
+a closure, an anonymous subroutine, that acts like the filter method on
+the given object.
+
+=head2 Adding new filters
+
 =cut
 
 our %filtermap;
