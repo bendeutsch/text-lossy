@@ -17,6 +17,11 @@ for my $sub (qw(
     add_filters
     as_coderef
 
+    lower
+    whitespace
+    punctuation
+    alphabetize
+
     register_filters
 )) {
     can_ok('Text::Lossy', $sub);
