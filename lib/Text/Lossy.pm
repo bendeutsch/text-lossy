@@ -50,12 +50,19 @@ most likely in a backwards-incompatible manner. You have been warned.
 
 C<Text::Lossy> uses an object oriented interface. You create a new
 C<Text::Lossy> object, set the filters you wish to use (described below),
-and call the L</filter|filter> method on the object. You can call this
+and call the L</filter> method on the object. You can call this
 method as often as you like. In addition, there is a method which produces
 a closure, an anonymous subroutine, that acts like the filter method on
 the given object.
 
 =head2 Adding new filters
+
+New filters can be added with the L</register_filters> class method.
+Each filter is a subroutine which takes a single string and returns this
+string filtered.
+
+Selector methods are B<not> automatically added; this is the responsibility
+of the code registering the filters, if desired.
 
 =cut
 
@@ -68,6 +75,8 @@ our %filtermap;
 The constructor for a new lossy text compressor. The constructor is quite 
 light-weight; the only purpose of a compressor object is to accept and remember
 a sequence of filters to apply to text.
+
+The constructor takes no arguments.
 
 =cut
 
@@ -83,6 +92,11 @@ sub new {
 
 =head2 filter
 
+This method takes a single text string, applies all the selected filters
+to it, and returns the filtered string. Filters are selected via 
+L</add_filters>
+or equivalently via the selector methods below; see L<FILTERS>.
+
 =cut
 
 sub filter {
@@ -94,6 +108,10 @@ sub filter {
 }
 
 =head2 add_filters
+
+This method takes a list of filter names and adds them to the filter list
+of the filter object, in the order given. The primary use of this method
+is the programmatic selection of filters, for example via command line.
 
 =cut
 
@@ -108,6 +126,15 @@ sub add_filters {
 
 =head2 as_coderef
 
+Returns a code reference that closes over the object. This code reference
+acts like a bound L</filter> method on the constructed object. It
+can be used in places like L<Text::Filter> that expect a code reference that
+filters text.
+
+The code reference is bound to the object, not a particular object state.
+Adding filters to the object after calling C<as_coderef> will also change
+the behaviour of the code reference.
+
 =cut
 
 sub as_coderef {
@@ -115,27 +142,6 @@ sub as_coderef {
     return sub {
         return $self->filter(@_);
     }
-}
-
-=head1 FUNCTIONS
-
-=head2 register_filters
-
-=cut
-
-%filtermap = (
-    'lower' => \&_lower,
-    'whitespace' => \&_whitespace,
-    'punctuation' => \&_punctuation,
-    'alphabetize' => \&_alphabetize,
-);
-
-sub register_filters {
-    my ($class, %mapping) = @_;
-    foreach my $name (keys %mapping) {
-        $filtermap{$name} = $mapping{$name};
-    }
-    return;
 }
 
 =head1 FILTERS
@@ -209,7 +215,7 @@ sub _punctuation {
 =head2 alphabetize
 
 Leaves the first and last letters of a word alone, but replaces the interior letters with
-the same set, sorted by the L<perlfun:sort|sort> function. This is done on the observation
+the same set, sorted by the L<sort|perlfun/sort> function. This is done on the observation
 (source uncertain at the time) that words can still be made out if the letters are present, but
 in a different order, as long as the outer ones remain the same.
 
@@ -233,9 +239,60 @@ sub _alphabetize {
 # - unidecode (separate module)
 # - normalize (separate module)
 
+=head1 CREATING FILTERS
+
+A filter is a subroutine which takes a single parameter (the text to be converted) and
+returns the filtered text. The text may also be changed in-place, as long as it is
+returned again. 
+
+These filters are then made available to the rest of the system via the
+L</register_filters> function:
+
+=head2 register_filters
+
+  Text::Lossy::register_filters(
+      change_stuff => \&Other::Module::change_text,
+      remove_ps    => sub { my ($text) = @_; $text =~ s{[Pp]}{}; return $text; },
+  );
+
+Adds one or more named filters to the set of available filters. Filters are
+passed in an anonymous hash.
+
+Previously defined mappings may be overwritten by this function. 
+This function does B<not> add named setting methods to the object; you
+will have to install these yourself.
+
+=cut
+
+%filtermap = (
+    'lower' => \&_lower,
+    'whitespace' => \&_whitespace,
+    'punctuation' => \&_punctuation,
+    'alphabetize' => \&_alphabetize,
+);
+
+sub register_filters {
+    my ($class, %mapping) = @_;
+    foreach my $name (keys %mapping) {
+        $filtermap{$name} = $mapping{$name};
+    }
+    return;
+}
+
+=head1 USAGE WITH Text::Filter
+
+The L<Text::Filter> module provides an infrastructure for filtering text, but no actual filters.
+It can be used with C<Text::Lossy> by passing the result of L</as_coderef> as the C<filter> 
+parameter.
+
 =head1 EXPORT
 
 Nothing exported or exportable; use the OO interface instead.
+
+=head1 UNICODE
+
+This code strives to be completely Unicode compatible. All filters aim to "do the right thing" on non-ASCII strings.
+Any failure to handle Unicode should be considered a bug; please report it.
 
 =head1 AUTHOR
 
