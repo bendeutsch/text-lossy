@@ -1,10 +1,17 @@
-Changes
-lib/Text/Lossy.pm
-Makefile.PL
+# Metadata
 MANIFEST            This list of files
 MANIFEST.SKIP       The opposite of this list of files
-README
+
+# Library
+lib/Text/Lossy.pm   The main library file
+Makefile.PL         The makefile
+
+# Documentation
+Changes             The changelog
 README.md           The github readme, in markdown
+TODO                The 
+
+# Tests
 t/00-load.t
 t/01-lower.t
 t/02-whitespace.t
