@@ -5,7 +5,7 @@ use Test::More;
 
 use Text::Lossy;
 
-my $lossy = Text::Lossy->new->whitespace;
+my $lossy = Text::Lossy->new->add('whitespace');
 
 is($lossy->filter('Hello,   World!'), 'Hello, World!', "Multiple spaces collapsed");
 is($lossy->filter('Hello, World!  '), 'Hello, World!', "Spaces at end removed");

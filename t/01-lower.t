@@ -6,7 +6,7 @@ use Test::More;
 
 use Text::Lossy;
 
-my $lossy = Text::Lossy->new->lower;
+my $lossy = Text::Lossy->new->add('lower');
 
 # ascii
 is($lossy->filter('Hello, World!'), 'hello, world!', "ASCII lowercase");

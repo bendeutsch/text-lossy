@@ -9,7 +9,7 @@ use Test::More;
 
 use Text::Lossy;
 
-my $lossy = Text::Lossy->new->alphabetize;
+my $lossy = Text::Lossy->new->add('alphabetize');
 
 is($lossy->filter('Hello, World!'), 'Hello, Wlord!', "Internally sorted");
 is($lossy->filter('alphabetization'), 'aaabehiilopttzn', "Long word internally sorted");

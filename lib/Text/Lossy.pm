@@ -23,10 +23,10 @@ our $VERSION = '0.01';
     use Text::Lossy;
 
     my $lossy = Text::Lossy->new;
-    $lossy->whitespace;
+    $lossy->add('whitespace');
     my $short = $lossy->filter($long);
 
-    my $lossy = Text::Lossy->new->lower->punctuation;  # Chaining usage
+    my $lossy = Text::Lossy->new->add('lower', 'punctuation');  # Chaining usage
 
     $lossy->filter($long); # In place
     $lossy->filter();      # Filters $_ in place
@@ -107,21 +107,22 @@ sub filter {
     return $text;
 }
 
-=head2 add_filters
+=head2 add
 
 This method takes a list of filter names and adds them to the filter list
-of the filter object, in the order given. The primary use of this method
-is the programmatic selection of filters, for example via command line.
+of the filter object, in the order given. This allows a programmatic
+selection of filters, for example via command line.
 
 =cut
 
-sub add_filters {
+sub add {
     my ($self, @filters) = @_;
     foreach my $name (@filters) {
         my $code = $filtermap{$name};
         next unless $code; # a warning might be nice at this point...
         push @{$self->{'filters'}}, $code;
     }
+    return $self;
 }
 
 =head2 as_coderef
@@ -149,9 +150,7 @@ sub as_coderef {
 The following filters are defined by this module. Other modules may define
 more filters.
 
-Each of these filters can be added to the set via the L</add_filter> method,
-or by using its name as an object method on the filtering object,
-i.e. C<< $lossy->lower >>.
+Each of these filters can be added to the set via the L</add> method.
 
 =head2 lower
 
@@ -161,12 +160,6 @@ to and including its Unicode handling.
 =cut
 
 sub lower {
-    my ($self) = @_;
-    $self->add_filters('lower');
-    return $self;
-}
-
-sub _lower {
     my ($text) = @_;
     return lc($text);
 }
@@ -180,12 +173,6 @@ to account for line continuations or a new line marker at the end.
 =cut
 
 sub whitespace {
-    my ($self) = @_;
-    $self->add_filters('whitespace');
-    return $self;
-}
-
-sub _whitespace {
     my ($text) = @_;
     $text =~ s{ \s+ }{ }xmsgu;
     $text =~ s{ \A \s+ }{}xmsgu;
@@ -201,12 +188,6 @@ nothing, removing it completely.
 =cut
 
 sub punctuation {
-    my ($self) = @_;
-    $self->add_filters('punctuation');
-    return $self;
-}
-
-sub _punctuation {
     my ($text) = @_;
     $text =~ s{ \p{Punctuation} }{}xmsgu;
     return $text;
@@ -225,11 +206,6 @@ uses end-of-word matches C<\b> to determine which letters to leave alone.
 =cut
 
 sub alphabetize {
-    my ($self) = @_;
-    $self->add_filters('alphabetize');
-    return $self;
-}
-sub _alphabetize {
     my ($text) = @_;
     $text =~ s{ \b (\p{Alpha}) (\p{Alpha}+) (\p{Alpha}) \b }{ $1 . join('', sort split(//,$2)) . $3 }xmsegu;
     return $text;
@@ -257,18 +233,15 @@ L</register_filters> function:
 
 Adds one or more named filters to the set of available filters. Filters are
 passed in an anonymous hash.
-
 Previously defined mappings may be overwritten by this function. 
-This function does B<not> add named setting methods to the object; you
-will have to install these yourself.
 
 =cut
 
 %filtermap = (
-    'lower' => \&_lower,
-    'whitespace' => \&_whitespace,
-    'punctuation' => \&_punctuation,
-    'alphabetize' => \&_alphabetize,
+    'lower' => \&lower,
+    'whitespace' => \&whitespace,
+    'punctuation' => \&punctuation,
+    'alphabetize' => \&alphabetize,
 );
 
 sub register_filters {

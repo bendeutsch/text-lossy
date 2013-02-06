@@ -9,7 +9,7 @@ use Test::More;
 
 use Text::Lossy;
 
-my $lossy = Text::Lossy->new->punctuation;
+my $lossy = Text::Lossy->new->add('punctuation');
 
 is($lossy->filter('Hello, World!'), 'Hello World', "ASCII punctuation removed");
 is($lossy->filter("Hello\x{2042} World\x{ff1f}"), "Hello World", "non-ASCII punctuation removed");
