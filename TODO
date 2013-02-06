@@ -1,8 +1,5 @@
 Proposed changes to Text::Lossy :
 
-- remove filter selecting methods in favour of 'add_filters'
-- rename 'add_filters' to 'add'
-- rename 'filter' to 'process'
 - add a 'clear' method to remove filters
 - add a 'list' method to list filters
 - add an 'available_filters' class method

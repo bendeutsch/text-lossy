@@ -24,12 +24,12 @@ our $VERSION = '0.01';
 
     my $lossy = Text::Lossy->new;
     $lossy->add('whitespace');
-    my $short = $lossy->filter($long);
+    my $short = $lossy->process($long);
 
     my $lossy = Text::Lossy->new->add('lower', 'punctuation');  # Chaining usage
 
-    $lossy->filter($long); # In place
-    $lossy->filter();      # Filters $_ in place
+    $lossy->process($long); # In place
+    $lossy->process();      # Filters $_ in place
 
 =head1 DESCRIPTION
 
@@ -50,9 +50,9 @@ most likely in a backwards-incompatible manner. You have been warned.
 
 C<Text::Lossy> uses an object oriented interface. You create a new
 C<Text::Lossy> object, set the filters you wish to use (described below),
-and call the L</filter> method on the object. You can call this
+and call the L</process> method on the object. You can call this
 method as often as you like. In addition, there is a method which produces
-a closure, an anonymous subroutine, that acts like the filter method on
+a closure, an anonymous subroutine, that acts like the process method on
 the given object.
 
 =head2 Adding new filters
@@ -90,16 +90,16 @@ sub new {
 
 =head1 METHODS
 
-=head2 filter
+=head2 process
 
 This method takes a single text string, applies all the selected filters
 to it, and returns the filtered string. Filters are selected via 
-L</add_filters>
+L</add>
 or equivalently via the selector methods below; see L<FILTERS>.
 
 =cut
 
-sub filter {
+sub process {
     my ($self, $text) = @_;
     foreach my $f (@{$self->{'filters'}}) {
         $text = $f->($text);
@@ -128,7 +128,7 @@ sub add {
 =head2 as_coderef
 
 Returns a code reference that closes over the object. This code reference
-acts like a bound L</filter> method on the constructed object. It
+acts like a bound L</process> method on the constructed object. It
 can be used in places like L<Text::Filter> that expect a code reference that
 filters text.
 
@@ -141,7 +141,7 @@ the behaviour of the code reference.
 sub as_coderef {
     my ($self) = @_;
     return sub {
-        return $self->filter(@_);
+        return $self->process(@_);
     }
 }
 

@@ -11,8 +11,8 @@ use Text::Lossy;
 
 my $lossy = Text::Lossy->new->add('punctuation');
 
-is($lossy->filter('Hello, World!'), 'Hello World', "ASCII punctuation removed");
-is($lossy->filter("Hello\x{2042} World\x{ff1f}"), "Hello World", "non-ASCII punctuation removed");
-is($lossy->filter("Hello World\x{2605}"), "Hello World\x{2605}", "non-punctuation stays");
+is($lossy->process('Hello, World!'), 'Hello World', "ASCII punctuation removed");
+is($lossy->process("Hello\x{2042} World\x{ff1f}"), "Hello World", "non-ASCII punctuation removed");
+is($lossy->process("Hello World\x{2605}"), "Hello World\x{2605}", "non-punctuation stays");
 
 done_testing();
