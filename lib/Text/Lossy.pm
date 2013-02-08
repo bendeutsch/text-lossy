@@ -106,7 +106,7 @@ or equivalently via the selector methods below; see L<FILTERS>.
 sub process {
     my ($self, $text) = @_;
     foreach my $f (@{$self->{'filters'}}) {
-        $text = $f->($text);
+        $text = $f->{'code'}->($text);
     }
     return $text;
 }
@@ -127,7 +127,7 @@ sub add {
     foreach my $name (@filters) {
         my $code = $filtermap{$name};
         next unless $code; # a warning might be nice at this point...
-        push @{$self->{'filters'}}, $code;
+        push @{$self->{'filters'}}, { code => $code, name => $name };
     }
     return $self;
 }
@@ -145,6 +145,20 @@ sub clear {
     my ($self) = @_;
     @{$self->{'filters'}} = ();
     return $self;
+}
+
+=head2 list
+
+    my @names = $lossy->list();
+
+List the filters added to this object, in order. The names (not the
+code) are returned in a list.
+
+=cut
+
+sub list {
+    my ($self) = @_;
+    return map $_->{'name'}, @{$self->{'filters'}};
 }
 
 =head2 as_coderef
