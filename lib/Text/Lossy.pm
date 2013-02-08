@@ -72,6 +72,8 @@ our %filtermap;
 
 =head2 new
 
+    my $lossy = Text::Lossy->new();
+
 The constructor for a new lossy text compressor. The constructor is quite 
 light-weight; the only purpose of a compressor object is to accept and remember
 a sequence of filters to apply to text.
@@ -92,6 +94,8 @@ sub new {
 
 =head2 process
 
+    my $new_text = $lossy->process( $old_text );
+
 This method takes a single text string, applies all the selected filters
 to it, and returns the filtered string. Filters are selected via 
 L</add>
@@ -109,9 +113,12 @@ sub process {
 
 =head2 add
 
+    $lossy->add( 'lower', 'whitespace' );
+
 This method takes a list of filter names and adds them to the filter list
 of the filter object, in the order given. This allows a programmatic
-selection of filters, for example via command line.
+selection of filters, for example via command line. Returns the object
+for method chaining.
 
 =cut
 
@@ -125,7 +132,25 @@ sub add {
     return $self;
 }
 
+=head2 clear
+
+    $lossy->clear();
+
+Remove the filters from the filter object. The object will behave as
+if newly constructed. Returns the object for method chaining.
+
+=cut
+
+sub clear {
+    my ($self) = @_;
+    @{$self->{'filters'}} = ();
+    return $self;
+}
+
 =head2 as_coderef
+
+    my $code = $lossy->as_coderef();
+    $new_text = $code->( $old_text );
 
 Returns a code reference that closes over the object. This code reference
 acts like a bound L</process> method on the constructed object. It
@@ -226,7 +251,7 @@ L</register_filters> function:
 
 =head2 register_filters
 
-  Text::Lossy::register_filters(
+  Text::Lossy->register_filters(
       change_stuff => \&Other::Module::change_text,
       remove_ps    => sub { my ($text) = @_; $text =~ s{[Pp]}{}; return $text; },
   );
