@@ -5,6 +5,8 @@ use strict;
 use warnings;
 use utf8;
 
+use Carp;
+
 =head1 NAME
 
 Text::Lossy - Lossy text compression
@@ -120,13 +122,19 @@ of the filter object, in the order given. This allows a programmatic
 selection of filters, for example via command line. Returns the object
 for method chaining.
 
+If the filter is unknown, an exception is thrown. This may happen when you
+misspell the name, or forgot to use a module which registers the filter,
+or forgot to register it yourself.
+
 =cut
 
 sub add {
     my ($self, @filters) = @_;
     foreach my $name (@filters) {
         my $code = $filtermap{$name};
-        next unless $code; # a warning might be nice at this point...
+        if (not $code) {
+            croak "Unknown filter $name (did you forget to use the right module?)";
+        }
         push @{$self->{'filters'}}, { code => $code, name => $name };
     }
     return $self;
