@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use feature qw(unicode_strings);
 use utf8;
 use open 'IO' => ':utf8';
 use open ':std';

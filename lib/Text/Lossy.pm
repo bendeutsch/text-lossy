@@ -103,10 +103,15 @@ to it, and returns the filtered string. Filters are selected via
 L</add>
 or equivalently via the selector methods below; see L<FILTERS>.
 
+The text is upgraded to character semantics via a call to
+C<utf8::upgrade>, see L<utf8>. This will not change the text you passed
+in, nor should it have too surprising an effect on the output.
+
 =cut
 
 sub process {
     my ($self, $text) = @_;
+    utf8::upgrade($text);
     foreach my $f (@{$self->{'filters'}}) {
         $text = $f->{'code'}->($text);
     }
@@ -221,9 +226,9 @@ to account for line continuations or a new line marker at the end.
 
 sub whitespace {
     my ($text) = @_;
-    $text =~ s{ \s+ }{ }xmsgu;
-    $text =~ s{ \A \s+ }{}xmsgu;
-    $text =~ s{ \s+ \z}{}xmsgu;
+    $text =~ s{ \s+ }{ }xmsg;
+    $text =~ s{ \A \s+ }{}xmsg;
+    $text =~ s{ \s+ \z}{}xmsg;
     return $text;
 }
 
@@ -236,7 +241,7 @@ nothing, removing it completely.
 
 sub punctuation {
     my ($text) = @_;
-    $text =~ s{ \p{Punctuation} }{}xmsgu;
+    $text =~ s{ \p{Punctuation} }{}xmsg;
     return $text;
 }
 
@@ -254,7 +259,7 @@ uses end-of-word matches C<\b> to determine which letters to leave alone.
 
 sub alphabetize {
     my ($text) = @_;
-    $text =~ s{ \b (\p{Alpha}) (\p{Alpha}+) (\p{Alpha}) \b }{ $1 . join('', sort split(//,$2)) . $3 }xmsegu;
+    $text =~ s{ \b (\p{Alpha}) (\p{Alpha}+) (\p{Alpha}) \b }{ $1 . join('', sort split(//,$2)) . $3 }xmseg;
     return $text;
 }
 
