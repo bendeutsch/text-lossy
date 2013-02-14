@@ -15,6 +15,11 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
     },
+    META_MERGE => {
+        resources => {
+            repository => 'https://github.com/bendeutsch/text-lossy',
+        },
+    },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Text-Lossy-*' },
 );
