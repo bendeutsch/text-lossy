@@ -19,20 +19,20 @@ sub all_digit {
     }
 }
 
-is (scalar(keys %Text::Lossy::filtermap), 4, "Start with four filters");
+is (scalar(keys %Text::Lossy::filtermap), 5, "Start with five filters");
 
 Text::Lossy->register_filters();
-is (scalar(keys %Text::Lossy::filtermap), 4, "No filters added");
+is (scalar(keys %Text::Lossy::filtermap), 5, "No filters added");
 
 # Note: we need a code reference, and 'all_digit' gives us one!
 Text::Lossy->register_filters( all_zero => all_digit(0) );
-is (scalar(keys %Text::Lossy::filtermap), 5, "One filter added");
+is (scalar(keys %Text::Lossy::filtermap), 6, "One filter added");
 $lossy = Text::Lossy->new->add('all_zero');
 
 is($lossy->process('The 12345 test'), 'The 00000 test', "Filter works");
 
 Text::Lossy->register_filters( lower => undef );
-is (scalar(keys %Text::Lossy::filtermap), 4, "Removed a built-in filter");
+is (scalar(keys %Text::Lossy::filtermap), 5, "Removed a built-in filter");
 
 throws_ok {
     $lossy = Text::Lossy->new->add('lower');

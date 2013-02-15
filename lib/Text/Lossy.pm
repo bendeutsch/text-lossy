@@ -201,7 +201,6 @@ sub as_coderef {
 
 The following filters are defined by this module. Other modules may define
 more filters.
-
 Each of these filters can be added to the set via the L</add> method.
 
 =head2 lower
@@ -220,15 +219,49 @@ sub lower {
 
 Collapses any whitespace (C<\s> in regular expressions) to a single space, C<U+0020>.
 Whitespace at the beginning and end of the text is stripped; you may need to add some
-to account for line continuations or a new line marker at the end.
+to account for line continuations or a new line marker at the end, or use the
+L</whitespace_nl> filter below.
 
 =cut
 
 sub whitespace {
     my ($text) = @_;
     $text =~ s{ \s+ }{ }xmsg;
-    $text =~ s{ \A \s+ }{}xmsg;
-    $text =~ s{ \s+ \z}{}xmsg;
+    $text =~ s{ \A \s+ }{}xms;
+    $text =~ s{ \s+ \z}{}xms;
+    return $text;
+}
+
+=head2 whitespace_nl
+
+A variant of the L</whitespace> filter that leaves newlines on the end of the text
+alone. Other whitespace at the end will get collapsed into a single newline.
+If the text does not end in whitespace that contains a new line, it is removed
+completely, as before.
+
+This filter is most useful if you are creating a Unix-style text filter, and do not
+want to buffer the entire input before writing the (only) line to C<stdout>. The
+newline at the end will allow downstream processes to work on new lines, too.
+Otherwise, this filter is not quite as efficient as the L<whitespace> filter.
+
+Any newlines in the middle of text are collapsed to a space, too. This is especially
+useful if you are reading in "paragraph mode", e.g. C<$/ = ''>, as you will get
+one long line per former paragraph.
+
+=cut
+
+sub whitespace_nl {
+    my ($text) = @_;
+    # Remember whether a newline was present, 
+    my $has_nl = ($text =~ m{ \n \s* \z }xms) ? 1 : 0;
+    $text =~ s{ \s+ }{ }xmsg;
+    $text =~ s{ \A \s+ }{}xms;
+    # ...remove it as before,
+    $text =~ s{ \s+ \z}{}xms;
+    # ...and add one back if necessary.
+    if ($has_nl) {
+        $text .= "\n";
+    }
     return $text;
 }
 
@@ -291,6 +324,7 @@ Specifically, passing C<undef> as the code reference removes the filter.
 %filtermap = (
     'lower' => \&lower,
     'whitespace' => \&whitespace,
+    'whitespace_nl' => \&whitespace_nl,
     'punctuation' => \&punctuation,
     'alphabetize' => \&alphabetize,
 );

@@ -1,8 +1,11 @@
 Proposed changes to Text::Lossy :
 
+Stashes:
 - add a 'filter stash' hashref to pass to each filter
 - add a 'eof' method and 'eof' filter parameter
 - add a 'rewind' method to clear stashes
 
+Basic filters:
 - add a 'punctuation_sp' filter which changes punctuation to spaces
-- add a 'whitespace_nl' filter which ends lines with a "\n"
+
+Other filters:
