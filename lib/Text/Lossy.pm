@@ -267,14 +267,11 @@ sub alphabetize {
 # - unidecode (separate module)
 # - normalize (separate module)
 
-=head1 CREATING FILTERS
+=head1 CLASS METHODS
 
-A filter is a subroutine which takes a single parameter (the text to be converted) and
-returns the filtered text. The text may also be changed in-place, as long as it is
-returned again. 
-
-These filters are then made available to the rest of the system via the
-L</register_filters> function:
+These methods are not called on a filter object, but on the class C<Text::Lossy>
+itself. They are typically concerned with the filters that can be added to filter
+objects.
 
 =head2 register_filters
 
@@ -308,6 +305,29 @@ sub register_filters {
     }
     return;
 }
+
+=head2 available_filters
+
+    my @filters = Text::Lossy->available_filters();
+
+Lists the available filters at this point in time, specifically their names
+as used by L</add> and L</register_filters>. The list is sorted alphabetically.
+
+=cut
+
+sub available_filters {
+    my ($class) = @_;
+    return sort keys %filtermap;
+}
+
+=head1 CREATING FILTERS
+
+A filter is a subroutine which takes a single parameter (the text to be converted) and
+returns the filtered text. The text may also be changed in-place, as long as it is
+returned again. 
+
+These filters are then made available to the rest of the system via the
+L</register_filters> function.
 
 =head1 USAGE WITH Text::Filter
 
