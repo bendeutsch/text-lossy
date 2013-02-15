@@ -24,6 +24,7 @@ t/04-alphabetize.t
 t/05-add.t
 t/06-clear.t
 t/07-list.t
+t/08-register_filters.t
 t/boilerplate.t
 t/manifest.t
 t/pod-coverage.t

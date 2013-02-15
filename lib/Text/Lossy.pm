@@ -286,6 +286,7 @@ L</register_filters> function:
 Adds one or more named filters to the set of available filters. Filters are
 passed in an anonymous hash.
 Previously defined mappings may be overwritten by this function. 
+Specifically, passing C<undef> as the code reference removes the filter.
 
 =cut
 
@@ -299,7 +300,11 @@ Previously defined mappings may be overwritten by this function.
 sub register_filters {
     my ($class, %mapping) = @_;
     foreach my $name (keys %mapping) {
-        $filtermap{$name} = $mapping{$name};
+        if (defined $mapping{$name}) {
+            $filtermap{$name} = $mapping{$name};
+        } else {
+            delete $filtermap{$name};
+        }
     }
     return;
 }
