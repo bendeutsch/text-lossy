@@ -241,7 +241,8 @@ nothing, removing it completely.
 
 sub punctuation {
     my ($text) = @_;
-    $text =~ s{ \p{Punctuation} }{}xmsg;
+    # Turns out '\p{Punctuation}' fails on Perl 5.6, use the abbreviation '\pP' instead
+    $text =~ s{ \pP }{}xmsg;
     return $text;
 }
 
