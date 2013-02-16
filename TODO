@@ -6,6 +6,5 @@ Stashes:
 - add a 'rewind' method to clear stashes
 
 Basic filters:
-- add a 'punctuation_sp' filter which changes punctuation to spaces
 
 Other filters:

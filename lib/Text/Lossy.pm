@@ -279,6 +279,21 @@ sub punctuation {
     return $text;
 }
 
+=head2 punctuation_sp
+
+A variant of L</punctuation> that replaces punctuation with a space character, C<U+0020>,
+instead of removing it completely. This is usually less efficient for compression, but
+retains more readability, for example in the presence of URLs or email addresses.
+
+=cut
+
+sub punctuation_sp {
+    my ($text) = @_;
+    # Turns out '\p{Punctuation}' fails on Perl 5.6, use the abbreviation '\pP' instead
+    $text =~ s{ \pP }{ }xmsg;
+    return $text;
+}
+
 =head2 alphabetize
 
 Leaves the first and last letters of a word alone, but replaces the interior letters with
@@ -326,6 +341,7 @@ Specifically, passing C<undef> as the code reference removes the filter.
     'whitespace' => \&whitespace,
     'whitespace_nl' => \&whitespace_nl,
     'punctuation' => \&punctuation,
+    'punctuation_sp' => \&punctuation_sp,
     'alphabetize' => \&alphabetize,
 );
 
