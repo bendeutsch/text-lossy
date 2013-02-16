@@ -218,17 +218,17 @@ sub lower {
 =head2 whitespace
 
 Collapses any whitespace (C<\s> in regular expressions) to a single space, C<U+0020>.
-Whitespace at the beginning and end of the text is stripped; you may need to add some
-to account for line continuations or a new line marker at the end, or use the
-L</whitespace_nl> filter below.
+Whitespace at the beginning of the text is stripped completely. Whitespace at the end
+is also collapsed to a single space, to help separate lines. Text consisting only
+of whitespace results in an empty string.
 
 =cut
 
 sub whitespace {
     my ($text) = @_;
     $text =~ s{ \s+ }{ }xmsg;
+    # the above line also works for the end of the text
     $text =~ s{ \A \s+ }{}xms;
-    $text =~ s{ \s+ \z}{}xms;
     return $text;
 }
 
@@ -236,8 +236,8 @@ sub whitespace {
 
 A variant of the L</whitespace> filter that leaves newlines on the end of the text
 alone. Other whitespace at the end will get collapsed into a single newline.
-If the text does not end in whitespace that contains a new line, it is removed
-completely, as before.
+If the text ends in whitespace that does not contain a new line, it is replaced
+by a space, as before.
 
 This filter is most useful if you are creating a Unix-style text filter, and do not
 want to buffer the entire input before writing the (only) line to C<stdout>. The
@@ -252,15 +252,14 @@ one long line per former paragraph.
 
 sub whitespace_nl {
     my ($text) = @_;
-    # Remember whether a newline was present, 
+    # Remember whether a newline was present
     my $has_nl = ($text =~ m{ \n \s* \z }xms) ? 1 : 0;
     $text =~ s{ \s+ }{ }xmsg;
     $text =~ s{ \A \s+ }{}xms;
-    # ...remove it as before,
-    $text =~ s{ \s+ \z}{}xms;
-    # ...and add one back if necessary.
+    # whitespace-at-end is now a space
     if ($has_nl) {
-        $text .= "\n";
+        # replace this space with a newline
+        $text =~ s{ \s+ \z }{\n}xms;
     }
     return $text;
 }
