@@ -4,11 +4,20 @@ use strict;
 use warnings;
 use open ':std', IO => ':utf8'; # all is utf8!
 
+use Getopt::Long;
 use Text::Lossy;
 
+my @filters = ();
+
+GetOptions(
+    'filter=s' => \@filters, 
+) or exit(1);
+
+# Multiple filters, in-order
+@filters = split(qr{ , }xms, join(',', @filters));
+
 my $lossy = Text::Lossy->new();
-# We'll start with three "sensible" filters.
-$lossy->add(qw( lower punctuation_sp whitespace ));
+$lossy->add( @filters );
 
 while (my $line = <>) {
     $line = $lossy->process($line);
