@@ -1,5 +1,15 @@
 Proposed changes to Text::Lossy :
 
+Script:
+- add command line options:
+  - filter selection
+  - numeric presets
+  - paragraph mode
+  - help
+  - version
+  - available-filters
+- man page
+
 Stashes: DEFERRED
 The "stash" mechanism was supposed to allow filters to carry
 state. Since this violates the principle of least surprise,
