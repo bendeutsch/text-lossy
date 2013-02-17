@@ -14,6 +14,9 @@ GetOptions(
     '1' => sub { @filters = qw( lower ); },
     '2' => sub { @filters = qw( lower whitespace ); },
     '3' => sub { @filters = qw( lower punctuation_sp whitespace ); },
+    'paragraph' => sub { $/ = ''; }, # global, we're in top scope here
+    '2l' => sub { @filters = qw( lower whitespace_nl ); },
+    '3l' => sub { @filters = qw( lower punctuation_sp whitespace_nl ); },
 ) or exit(1);
 
 # Multiple filters, in-order

@@ -2,7 +2,6 @@ Proposed changes to Text::Lossy :
 
 Script:
 - add command line options:
-  - paragraph mode
   - help
   - version
   - available-filters
