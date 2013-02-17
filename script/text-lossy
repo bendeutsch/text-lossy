@@ -11,6 +11,9 @@ my @filters = ();
 
 GetOptions(
     'filter=s' => \@filters, 
+    '1' => sub { @filters = qw( lower ); },
+    '2' => sub { @filters = qw( lower whitespace ); },
+    '3' => sub { @filters = qw( lower punctuation_sp whitespace ); },
 ) or exit(1);
 
 # Multiple filters, in-order
@@ -23,5 +26,4 @@ while (my $line = <>) {
     $line = $lossy->process($line);
     print $line;
 }
-# We add a newline at the very very end, just to be nice
-print "\n";
+# No extra newline, nice as it would be: no longer idempotent!
