@@ -9,10 +9,12 @@ use Pod::Usage;
 use Text::Lossy;
 
 my $help = undef;
+my $version = undef;
 my @filters = ();
 
 GetOptions(
     'help' => \$help,
+    'version' => \$version,
     'filter=s' => \@filters, 
     '1' => sub { @filters = qw( lower ); },
     '2' => sub { @filters = qw( lower whitespace ); },
@@ -21,7 +23,13 @@ GetOptions(
     '2l' => sub { @filters = qw( lower whitespace_nl ); },
     '3l' => sub { @filters = qw( lower punctuation_sp whitespace_nl ); },
 ) or pod2usage(2);
-pod2usage(1) if $help;
+if ($help) {
+    pod2usage(1) 
+}
+if ($version) {
+    print "text-lossy version $Text::Lossy::VERSION\n";
+    exit(0);
+}
 
 
 # Multiple filters, in-order
