@@ -1,8 +1,6 @@
 Proposed changes to Text::Lossy :
 
 Script:
-- add command line options:
-  - available-filters
 - man page
 
 Stashes: DEFERRED

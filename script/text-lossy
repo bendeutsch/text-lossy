@@ -10,6 +10,7 @@ use Text::Lossy;
 
 my $help = undef;
 my $version = undef;
+my $available_filters = undef;
 my @filters = ();
 
 GetOptions(
@@ -22,12 +23,21 @@ GetOptions(
     'paragraph' => sub { $/ = ''; }, # global, we're in top scope here
     '2l' => sub { @filters = qw( lower whitespace_nl ); },
     '3l' => sub { @filters = qw( lower punctuation_sp whitespace_nl ); },
+    'available-filters' => \$available_filters,
 ) or pod2usage(2);
 if ($help) {
     pod2usage(1) 
 }
 if ($version) {
     print "text-lossy version $Text::Lossy::VERSION\n";
+    exit(0);
+}
+if ($available_filters) {
+    my @available = Text::Lossy->available_filters();
+    print "Available filters: \n";
+    foreach my $f (@available) {
+        print "  $f\n"
+    }
     exit(0);
 }
 
@@ -56,8 +66,10 @@ text-lossy [-1|-2|-3|--filter <aa,bb,cc>|--paragraph] [file ...]
 
  Options:
    - help                This help
+   - version             Version of text-lossy
    - filter  aa,bb,cc    Add filters named 'aa', 'bb' and 'cc' to the process
                          This option can also be given more than once
+   - available-filters   List of available filters
    - 1                   Preset 1: filter  'lower'
    - 2                   Preset 2: filters 'lower whitespace'
    - 3                   Preset 3: filters 'lower punctuation_sp whitespace'
@@ -73,11 +85,21 @@ text-lossy [-1|-2|-3|--filter <aa,bb,cc>|--paragraph] [file ...]
 
 Show this help.
 
+=item version
+
+Show the version of this program.
+
 =item filter
 
 Add one ore more named filters to use for this run. For multiple filters,
 you can either separate the names with commas, or use the C<filter> option
 several times.
+
+=item available-filters
+
+Returns a list of currently available filters. These names can be passed
+to the C<filter> option. See L<Text::Lossy(3pm)|Text::Lossy> or supporting
+modules for information on the filters.
 
 =item 1, 2, 3
 
