@@ -5,11 +5,14 @@ use warnings;
 use open ':std', IO => ':utf8'; # all is utf8!
 
 use Getopt::Long;
+use Pod::Usage;
 use Text::Lossy;
 
+my $help = undef;
 my @filters = ();
 
 GetOptions(
+    'help' => \$help,
     'filter=s' => \@filters, 
     '1' => sub { @filters = qw( lower ); },
     '2' => sub { @filters = qw( lower whitespace ); },
@@ -17,7 +20,9 @@ GetOptions(
     'paragraph' => sub { $/ = ''; }, # global, we're in top scope here
     '2l' => sub { @filters = qw( lower whitespace_nl ); },
     '3l' => sub { @filters = qw( lower punctuation_sp whitespace_nl ); },
-) or exit(1);
+) or pod2usage(2);
+pod2usage(1) if $help;
+
 
 # Multiple filters, in-order
 @filters = split(qr{ , }xms, join(',', @filters));
