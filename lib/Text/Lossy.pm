@@ -63,9 +63,6 @@ New filters can be added with the L</register_filters> class method.
 Each filter is a subroutine which takes a single string and returns this
 string filtered.
 
-Selector methods are B<not> automatically added; this is the responsibility
-of the code registering the filters, if desired.
-
 =cut
 
 our %filtermap;
@@ -76,7 +73,7 @@ our %filtermap;
 
     my $lossy = Text::Lossy->new();
 
-The constructor for a new lossy text compressor. The constructor is quite 
+The constructor for a new lossy text compressor. The constructor is quite
 light-weight; the only purpose of a compressor object is to accept and remember
 a sequence of filters to apply to text.
 
@@ -99,9 +96,8 @@ sub new {
     my $new_text = $lossy->process( $old_text );
 
 This method takes a single text string, applies all the selected filters
-to it, and returns the filtered string. Filters are selected via 
-L</add>
-or equivalently via the selector methods below; see L<FILTERS>.
+to it, and returns the filtered string. Filters are selected via
+L</add>; see L<FILTERS>.
 
 The text is upgraded to character semantics via a call to
 C<utf8::upgrade>, see L<utf8>. This will not change the text you passed
@@ -337,7 +333,7 @@ objects.
 
 Adds one or more named filters to the set of available filters. Filters are
 passed in an anonymous hash.
-Previously defined mappings may be overwritten by this function. 
+Previously defined mappings may be overwritten by this function.
 Specifically, passing C<undef> as the code reference removes the filter.
 
 =cut
@@ -381,7 +377,7 @@ sub available_filters {
 
 A filter is a subroutine which takes a single parameter (the text to be converted) and
 returns the filtered text. The text may also be changed in-place, as long as it is
-returned again. 
+returned again.
 
 These filters are then made available to the rest of the system via the
 L</register_filters> function.
@@ -389,7 +385,7 @@ L</register_filters> function.
 =head1 USAGE WITH Text::Filter
 
 The L<Text::Filter> module provides an infrastructure for filtering text, but no actual filters.
-It can be used with C<Text::Lossy> by passing the result of L</as_coderef> as the C<filter> 
+It can be used with C<Text::Lossy> by passing the result of L</as_coderef> as the C<filter>
 parameter.
 
 It is recommended to set L<Text::Filter> to leave line endings alone when using the L</whitespace>
