@@ -392,6 +392,18 @@ The L<Text::Filter> module provides an infrastructure for filtering text, but no
 It can be used with C<Text::Lossy> by passing the result of L</as_coderef> as the C<filter> 
 parameter.
 
+It is recommended to set L<Text::Filter> to leave line endings alone when using the L</whitespace>
+filter, i.e. the L<input_postread|Text::Filter/input_postread> and
+L<output_prewrite|Text::Filter/output_prewrite> should be C<0>. This is the default
+for L<Text::Filter>. It will allow L</whitespace> to perform its assigned task on line endings.
+
+One thing to note is that the C<Text::Lossy> filters do not follow the L<Text::Filter>'s convention
+that lines "to be skipped" should result in an C<undef>.
+This means you need to expect completely empty lines (C<q{}>, not even a newline character) in
+your output.
+This should be no problem if you print to a file handle or append to a string, but may be surprising
+if you are filtering an array of lines.
+
 =head1 EXPORT
 
 Nothing exported or exportable; use the OO interface instead.
