@@ -12,6 +12,7 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
+    EXE_FILES           => ['script/text-lossy'],
     PREREQ_PM => {
         'Test::More' => 0,
         'Test::Exception' => 0,
