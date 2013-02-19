@@ -107,10 +107,17 @@ The text is upgraded to character semantics via a call to
 C<utf8::upgrade>, see L<utf8>. This will not change the text you passed
 in, nor should it have too surprising an effect on the output.
 
+If no text is passed in, nothing is returned (the empty list or C<undef>,
+depending on context).
+If an explicit C<undef> is passed in, an explicit C<undef> is returned, even in
+list context.
+
 =cut
 
 sub process {
     my ($self, $text) = @_;
+    return unless @_ > 1;
+    return undef unless defined $text;
     utf8::upgrade($text);
     foreach my $f (@{$self->{'filters'}}) {
         $text = $f->{'code'}->($text);
