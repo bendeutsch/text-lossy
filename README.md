@@ -23,44 +23,34 @@ This module only supplies the entropy reduction via lossy transformation
 of the text. This text is meant to be further processed by a lossless
 compression, e.g. gzip, 7zip or similar.
 
-
 INSTALLATION
 ------------
 
-To install this module, run the following commands:
-
-	perl Makefile.PL
-	make
-	make test
-	make install
+This distribution uses `ExtUtils::MakeMaker` for building and installation.
+Refer to the included `README` for detailed installation procedures.
 
 SUPPORT AND DOCUMENTATION
 -------------------------
 
-After installing, you can find documentation for this module with the
-perldoc command.
+The main documentation for the module is the POD included in `Text::Lossy`:
 
     perldoc Text::Lossy
+
+Issues with development, including suggestions and pull requests, should
+be handled through github.
 
 You can also look for information at:
 
     RT, CPAN's request tracker (report bugs here)
         http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-Lossy
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Text-Lossy
-
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Text-Lossy
-
-    Search CPAN
-        http://search.cpan.org/dist/Text-Lossy/
+and the included `README` file.
 
 
 LICENSE AND COPYRIGHT
 ---------------------
 
-Copyright (C) 2012 Ben Deutsch
+Copyright (C) 2012-2013 Ben Deutsch
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
