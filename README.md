@@ -1,6 +1,8 @@
 Text::Lossy
 ===========
 
+[![Build Status](https://travis-ci.org/bendeutsch/text-lossy.svg?branch=master)](https://travis-ci.org/bendeutsch/text-lossy)
+
 This is a Perl 5 module which implements lossy text compression.
 Specifically, it implements the "lossy" part to transform any text to a
 form which is better compressible by standard entropy-based compression
